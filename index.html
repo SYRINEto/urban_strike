@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URBAN STRIKE — City Defense</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="gameWrapper">
+
+  <!-- HUD TOP -->
+  <div id="hud">
+    <div class="score-block">SCORE: <span id="scoreDisplay">0</span></div>
+    <div class="level-block">LEVEL <span id="levelDisplay">1</span></div>
+    <div class="lives-block" id="livesDisplay">♥ ♥ ♥</div>
+  </div>
+
+  <!-- CANVAS -->
+  <canvas id="gameCanvas" width="600" height="500"></canvas>
+  <div class="scanline"></div>
+
+  <!-- HUD BOTTOM -->
+  <div id="bottomHud">
+    <span>← → MOVE</span>
+    <span>SPACE SHOOT</span>
+    <span>URBAN STRIKE v1.0</span>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="overlay" id="startScreen">
+    <h1>URBAN STRIKE</h1>
+    <div class="subtitle">City Defense Protocol</div>
+    <div class="info">Défendez la ville contre les drones ennemis</div>
+    <div class="info">3 niveaux — difficulté croissante</div>
+    <div class="info" style="margin-top:16px;">← → Déplacer &nbsp;|&nbsp; ESPACE Tirer</div>
+    <div class="btn-row">
+      <button class="btn" id="startBtn">DÉMARRER</button>
+      <button class="btn btn-guide" id="guideBtn">📖 GUIDE</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ GUIDE POPUP ══════════════ -->
+  <div id="guideOverlay">
+    <div id="guideBox">
+
+      <div id="guideHeader">
+        <span id="guideTitle">📖 GUIDE DU JOUEUR</span>
+        <button id="closeGuideBtn">✕</button>
+      </div>
+
+      <div id="guideMission">
+        🏙️ Mission : Défendez la ville contre l'invasion de drones !
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">🎯 OBJECTIF</div>
+        <p class="guide-text">
+          Détruisez <em>tous les drones ennemis</em> de chaque vague pour passer au niveau suivant.
+          Survivez aux <strong>3 niveaux</strong> pour sauver la ville et remporter la victoire !
+        </p>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">🕹️ CONTRÔLES</div>
+        <div class="guide-row">
+          <span class="guide-key">← →</span>
+          <span class="guide-desc">Déplacer le vaisseau à gauche / droite</span>
+        </div>
+        <div class="guide-row">
+          <span class="guide-key">ESPACE</span>
+          <span class="guide-desc">Tirer un laser (maintenir pour rafale)</span>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">👾 TYPES DE DRONES</div>
+        <div class="guide-row">
+          <span class="guide-enemy basic">■</span>
+          <span class="guide-desc"><strong>Drone Basique</strong> — <span class="pts cyan">10 pts</span> — lent, facile</span>
+        </div>
+        <div class="guide-row">
+          <span class="guide-enemy medium">■</span>
+          <span class="guide-desc"><strong>Drone Moyen</strong> — <span class="pts orange">20 pts</span> — vitesse normale</span>
+        </div>
+        <div class="guide-row">
+          <span class="guide-enemy elite">■</span>
+          <span class="guide-desc"><strong>Drone Élite</strong> — <span class="pts magenta">30 pts</span> — rapide, dangereux !</span>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">⚠️ VOUS PERDEZ UNE VIE SI…</div>
+        <div class="guide-row">
+          <span class="danger-icon">💥</span>
+          <span class="guide-desc">Un tir ennemi <strong>touche votre vaisseau</strong></span>
+        </div>
+        <div class="guide-row">
+          <span class="danger-icon">⬇️</span>
+          <span class="guide-desc">Les drones <strong>descendent trop bas</strong> vers la ville</span>
+        </div>
+        <p class="guide-text" style="margin-top:8px;">
+          Vous avez <strong>3 vies ♥ ♥ ♥</strong> — à 0 vies c'est <strong>Game Over</strong> !
+        </p>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">📈 LES 3 NIVEAUX</div>
+        <div class="guide-row">
+          <span class="guide-lvl lvl1">N1</span>
+          <span class="guide-desc">2 rangées · 12 drones · tirs lents</span>
+        </div>
+        <div class="guide-row">
+          <span class="guide-lvl lvl2">N2</span>
+          <span class="guide-desc">3 rangées · 21 drones · tirs normaux</span>
+        </div>
+        <div class="guide-row">
+          <span class="guide-lvl lvl3">N3</span>
+          <span class="guide-desc">4 rangées · 32 drones · tirs rapides !</span>
+        </div>
+      </div>
+
+      <div id="guideTip">
+        💡 <strong>Astuce :</strong> Les drones accélèrent à chaque rebond sur le mur — éliminez-les rapidement !
+      </div>
+
+      <button class="btn" id="closeGuideBtn2">✕ FERMER LE GUIDE</button>
+    </div>
+  </div>
+  <!-- ══════════════════════════════════════════ -->
+
+  <!-- LEVEL CLEAR SCREEN -->
+  <div class="overlay" id="levelScreen" style="display:none;">
+    <div class="level-badge">NIVEAU TERMINÉ !</div>
+    <div id="levelClearMsg" class="subtitle"></div>
+    <div id="finalScore"></div>
+    <button class="btn" id="nextLevelBtn">NIVEAU SUIVANT</button>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="overlay" id="gameOverScreen" style="display:none;">
+    <h1 style="color:var(--neon-red);text-shadow:0 0 20px var(--neon-red);">GAME OVER</h1>
+    <div class="subtitle" style="color:rgba(255,23,68,0.7);">Mission échouée</div>
+    <div id="finalScoreGO" style="font-family:'Orbitron';font-size:18px;color:var(--neon-orange);margin:16px 0;letter-spacing:3px;"></div>
+    <button class="btn" style="border-color:var(--neon-red);color:var(--neon-red);" id="restartBtn">RECOMMENCER</button>
+  </div>
+
+  <!-- WIN SCREEN -->
+  <div class="overlay" id="winScreen" style="display:none;">
+    <h1 style="color:var(--neon-green);text-shadow:0 0 20px var(--neon-green);">VICTOIRE !</h1>
+    <div class="subtitle" style="color:var(--neon-green);">Ville sauvée</div>
+    <div id="finalScoreWin" style="font-family:'Orbitron';font-size:20px;color:var(--neon-cyan);margin:16px 0;letter-spacing:3px;"></div>
+    <button class="btn" style="border-color:var(--neon-green);color:var(--neon-green);" id="winRestartBtn">REJOUER</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
